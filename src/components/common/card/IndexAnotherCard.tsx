@@ -22,7 +22,7 @@ export default function IndexAnotherCard({
   const categoryName = categories[0] || "";
 
   return (
-    <article className="h-[160px] w-full sm:h-32 sm:w-57">
+    <article className="h-[160px] w-57 sm:h-32">
       <div
         className="relative flex h-[160px] w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg sm:h-full"
         onClick={() => setIsOpen(true)}
