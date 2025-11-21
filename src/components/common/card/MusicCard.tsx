@@ -36,18 +36,21 @@ export default function MusicCard({
     window.open(youtubeUrl, "_blank");
   };
   return (
-    <article className="flex h-auto sm:h-72 w-full sm:w-58 flex-col items-center justify-center">
-      <div className="flex h-full w-full flex-col gap-2 overflow-hidden rounded-xl shadow-lg transition-all duration-300 hover:scale-105">
+    <article className="flex h-auto w-full flex-col items-center justify-center ">
+      <div className="w-56.1 flex h-70 flex-col gap-1.5 overflow-hidden rounded-xl shadow-lg transition-all duration-300 hover:scale-105">
         <div
-          className="group relative h-40 sm:h-32 w-full cursor-pointer overflow-hidden"
+          className="group relative cursor-pointer overflow-hidden sm:h-32"
           onClick={handleImageClick}
         >
           <div className="relative h-full w-full bg-gray-200">
             <img
               src={thumbnail}
               alt="music-card"
+              width={480}
+              height={360}
               className="pointer-events-none h-full w-full object-cover object-center"
-              loading="lazy"
+              loading="eager"
+              fetchPriority="high"
             />
           </div>
           <div className="backdrop-blur-0 pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:backdrop-blur-sm">
@@ -75,40 +78,57 @@ export default function MusicCard({
             )}
           </div>
         </div>
-        <div className="mx-2 sm:mx-3 flex items-center justify-between">
-          <div className="flex flex-col items-start justify-center gap-[2px] flex-1 min-w-0">
-            <p className="text-xs sm:text-sm font-bold text-[#1f2937] truncate w-full">{title}</p>
-            <p className="text-[9px] sm:text-[10px] font-medium text-[#6b7280] truncate w-full">{singer}</p>
+        <div className="mx-2 mt-2 flex items-center justify-between sm:mx-3">
+          <div className="flex min-w-0 flex-1 flex-col items-start justify-center gap-1">
+            <p className="w-full truncate text-xs font-bold text-[#1f2937] sm:text-sm">
+              {title}
+            </p>
+            <p className="w-full truncate text-[9px] font-medium text-[#6b7280] sm:text-[10px]">
+              {singer}
+            </p>
           </div>
-          <div className={cn(!session && "pointer-events-none invisible", "shrink-0 ml-2")}>
+          <div
+            className={cn(
+              !session && "pointer-events-none invisible",
+              "ml-2 shrink-0",
+            )}
+          >
             <Button variant="ICON" onClick={handleHeartClick}>
               <Icon
                 icon={isLiked ? FullHeartIcon : HeartIcon}
                 size={24}
-                className="sm:w-[30px] sm:h-[30px]"
+                className="sm:h-[30px] sm:w-[30px]"
                 color="black"
               />
             </Button>
           </div>
         </div>
-        <div className="mx-2 sm:mx-3">
-          <div className="mt-2 flex items-center gap-1 overflow-hidden">
+        {categories.length > 0 && (
+          <div className="mx-2 mt-2 flex items-center gap-1 overflow-hidden sm:mx-3">
             {categories.map((cat) => (
-              <Tag type="tag" key={cat} className="shrink-0 text-[7px] sm:text-[8px]">
+              <Tag
+                type="tag"
+                key={cat}
+                className="shrink-0 text-[7px] sm:text-[8px]"
+              >
                 {cat}
               </Tag>
             ))}
           </div>
-          <div className="mt-3 sm:mt-5 flex items-center gap-1 flex-wrap">
-            <Button
-              variant="MUSIC_CARD"
-              onClick={handleYoutubeClick}
-              className="transition-all duration-300 hover:scale-105 text-xs sm:text-sm"
-            >
-              INSTRUMENTAL
-            </Button>
-            <Tag type="note" className="text-xs sm:text-sm">{noteKey}</Tag>
-          </div>
+        )}
+        <div className="mx-2 mt-3 mb-1 flex min-w-0 items-center gap-1 overflow-hidden sm:mx-3 sm:mb-1.5">
+          <Button
+            variant="MUSIC_CARD"
+            onClick={handleYoutubeClick}
+            className="min-w-0 shrink text-xs transition-all duration-300 hover:scale-105 sm:text-sm"
+          >
+            <span className="truncate">INSTRUMENTAL</span>
+          </Button>
+          {noteKey && (
+            <Tag type="note" className="shrink-0 text-xs sm:text-sm">
+              {noteKey}
+            </Tag>
+          )}
         </div>
       </div>
     </article>

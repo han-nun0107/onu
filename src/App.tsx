@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import "./App.css";
-import "react-toastify/dist/ReactToastify.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider } from "react-router";
 import { router } from "@/pages/routes";
@@ -13,6 +12,7 @@ function App() {
 
   useEffect(() => {
     initializeAuth();
+    import("react-toastify/dist/ReactToastify.css");
   }, [initializeAuth]);
 
   return (

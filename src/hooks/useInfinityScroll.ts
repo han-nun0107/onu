@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from "react";
+import { useLayoutEffect, useCallback } from "react";
 
 interface Params {
   observerRef: React.RefObject<HTMLDivElement | null>;
@@ -19,7 +19,7 @@ export function useInfinityScroll({
     fetchNextPage();
   }, [fetchNextPage, hasNextPage, isFetching]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const target = observerRef.current;
     if (!target) return;
 

@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useMemo } from "react";
+import { useRef, useState, useLayoutEffect, useMemo } from "react";
 
 const INITIAL_DISPLAY_COUNT = 40;
 const LOAD_MORE_COUNT = 20;
@@ -10,7 +10,7 @@ export function useInfiniteScrollDisplay<T>(
   const observerRef = useRef<HTMLDivElement | null>(null);
   const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY_COUNT);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setDisplayCount(INITIAL_DISPLAY_COUNT);
   }, resetDependencies);
 
@@ -21,7 +21,7 @@ export function useInfiniteScrollDisplay<T>(
 
   const hasMore = displayCount < items.length;
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const observer = observerRef.current;
     if (!observer || !hasMore) return;
 

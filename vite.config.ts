@@ -28,6 +28,7 @@ export default defineConfig({
   build: {
     target: ["es2022", "edge124", "firefox124", "chrome124", "safari18"],
     cssMinify: true,
+    cssCodeSplit: true,
     minify: "esbuild",
     rollupOptions: {
       output: {

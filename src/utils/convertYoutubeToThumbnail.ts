@@ -12,7 +12,7 @@ export function convertYoutubeToThumbnail(url: string) {
   }
 
   const id = getYouTubeID(url);
-  return id
-    ? `https://img.youtube.com/vi/${id}/hqdefault.jpg`
-    : "https://via.placeholder.com/320x180";
+  if (!id) return "https://via.placeholder.com/320x180";
+
+  return `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
 }
