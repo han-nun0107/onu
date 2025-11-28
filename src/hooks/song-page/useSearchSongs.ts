@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import type { SongData } from "@/api/songdb";
 import { useAllSongs } from "./useSongs";
 import { useDebounce } from "@/hooks";
 import { fuzzySearchSongs } from "@/utils/fuzzySearch";
