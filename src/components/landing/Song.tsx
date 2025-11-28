@@ -9,24 +9,35 @@ import {
   useAllSongs,
   useProcessedSongs,
   useInfiniteScrollDisplay,
+  useSearchSongs,
 } from "@/hooks";
 import { getSongUniqueKey } from "@/utils";
 import { useSortFilterStore } from "@/stores/sortFilterStore";
+import { useSearchStore } from "@/stores/searchStore";
 
 export default function Song() {
   const { sortType, filterType } = useSortFilterStore();
+  const { searchQuery } = useSearchStore();
   const { data: allSongsData, isLoading } = useAllSongs();
+  const { searchResults, isLoading: isSearchLoading } = useSearchSongs(searchQuery);
 
-  const rawSongs = useMemo(() => allSongsData ?? [], [allSongsData]);
+  // 검색어가 있으면 검색 결과를, 없으면 전체 노래를 사용
+  const rawSongs = useMemo(() => {
+    if (searchQuery.trim()) {
+      return searchResults;
+    }
+    return allSongsData ?? [];
+  }, [searchQuery, searchResults, allSongsData]);
+
   const processedSongs = useProcessedSongs(rawSongs);
 
   const {
     displayedItems: displayedSongs,
     hasMore,
     observerRef,
-  } = useInfiniteScrollDisplay(processedSongs, [sortType, filterType]);
+  } = useInfiniteScrollDisplay(processedSongs, [sortType, filterType, searchQuery]);
 
-  if (isLoading) {
+  if (isLoading || isSearchLoading) {
     return <LoadingState />;
   }
 

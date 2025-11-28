@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useMemo } from "react";
 import { useLayoutStore } from "@/stores/layoutStore";
 import { useSearchStore } from "@/stores/searchStore";
 import { useSearchSongs, useLayoutHandlers } from "@/hooks";
@@ -21,7 +21,6 @@ type LayoutProps = {
 };
 
 export default function Layout({ children, toggleButtons = [] }: LayoutProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
   const {
     isLeftMenuOpen,
     isSearchOpen,
@@ -41,14 +40,6 @@ export default function Layout({ children, toggleButtons = [] }: LayoutProps) {
     useSearchSongs(searchQuery);
   const { handleMenuClick, handleSongClick } = useLayoutHandlers();
 
-  const handleToggleExpanded = useCallback(() => {
-    setIsExpanded((prev) => !prev);
-  }, []);
-
-  const handleCloseExpanded = useCallback(() => {
-    setIsExpanded(false);
-  }, []);
-
   const menuItems = useMemo(
     () => createMenuItems(handleMenuClick),
     [handleMenuClick],
@@ -59,19 +50,12 @@ export default function Layout({ children, toggleButtons = [] }: LayoutProps) {
       createToggleButtons(
         {
           onMenuClick: toggleLeftMenu,
-          onSearchClick: toggleSearch,
           onSortClick: toggleSort,
           onFilterClick: toggleFilter,
         },
-        handleCloseExpanded,
+        () => {},
       ),
-    [
-      toggleLeftMenu,
-      toggleSearch,
-      toggleSort,
-      toggleFilter,
-      handleCloseExpanded,
-    ],
+    [toggleLeftMenu, toggleSort, toggleFilter],
   );
 
   const buttons = useMemo(
@@ -104,11 +88,7 @@ export default function Layout({ children, toggleButtons = [] }: LayoutProps) {
 
       <FilterPanel isOpen={isFilterOpen} onClose={closeFilter} />
 
-      <ToggleButtonGroup
-        buttons={buttons}
-        isExpanded={isExpanded}
-        onToggle={handleToggleExpanded}
-      />
+      <ToggleButtonGroup buttons={buttons} />
     </div>
   );
 }
