@@ -4,27 +4,33 @@ export function expandSearchQuery(query: string): string[] {
   const normalizedQuery = query.toLowerCase().trim();
   const queries = [normalizedQuery];
 
+  // 장르/카테고리 키 목록 (가수 그룹과 구분)
+  const genreKeys = ["케이팝", "팝", "제이팝"];
+
   for (const [key, values] of Object.entries(SEARCH_MAPPINGS)) {
     const normalizedKey = key.toLowerCase();
+    const isGenre = genreKeys.includes(key);
 
     // 정확히 일치하는 경우
     if (
       normalizedQuery === normalizedKey ||
       values.some((v) => v.toLowerCase() === normalizedQuery)
     ) {
-      // 검색어가 정확히 일치하는 경우, 그룹 키만 추가하고 다른 멤버들은 추가하지 않음
-      // 예: "제니" 검색 시 "블랙핑크"만 추가하고 "로제", "지수", "리사"는 추가하지 않음
       queries.push(normalizedKey);
 
-      // 검색어 자체가 키인 경우에만 모든 값 추가
-      if (normalizedQuery === normalizedKey) {
+      // 장르/카테고리인 경우: 검색어가 키이거나 값 중 하나면 모든 값 추가
+      if (isGenre) {
         queries.push(...values.map((v) => v.toLowerCase()));
+      } else {
+        // 가수 그룹의 경우: 키로 검색한 경우에만 모든 값 추가
+        // 멤버 이름으로 검색한 경우에는 키만 추가 (다른 멤버 제외)
+        if (normalizedQuery === normalizedKey) {
+          queries.push(...values.map((v) => v.toLowerCase()));
+        }
       }
     }
-    // 부분 일치: 검색어가 매핑 값에 포함되거나, 매핑 값이 검색어에 포함되는 경우
-    // 단, 단어 경계를 고려하여 더 정확하게 매칭
+    // 부분 일치
     else if (normalizedQuery.length >= 2) {
-      // 매핑 값에서 검색어로 시작하거나 끝나는 경우만 (단어 경계 고려)
       const hasWordBoundaryMatch = values.some((v) => {
         const normalizedValue = v.toLowerCase();
         return (
@@ -34,17 +40,15 @@ export function expandSearchQuery(query: string): string[] {
         );
       });
 
-      // 키에서도 동일하게 확인
       const hasKeyMatch =
         normalizedKey.startsWith(normalizedQuery) ||
         normalizedKey.endsWith(normalizedQuery) ||
         normalizedKey === normalizedQuery;
 
       if (hasWordBoundaryMatch || hasKeyMatch) {
-        // 부분 일치의 경우에도 그룹 키만 추가
         queries.push(normalizedKey);
-        // 검색어가 키와 정확히 일치하는 경우에만 모든 값 추가
-        if (normalizedQuery === normalizedKey) {
+        // 장르/카테고리인 경우 모든 값 추가
+        if (isGenre) {
           queries.push(...values.map((v) => v.toLowerCase()));
         }
       }

@@ -10,3 +10,4 @@ export * from "./songSorters";
 export * from "./songDeduplication";
 export * from "./scrollLock";
 export * from "./clipboard";
+export * from "./songCardData";

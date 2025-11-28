@@ -1,6 +1,9 @@
 import { useMemo } from "react";
 import { useLayoutStore } from "@/stores/layoutStore";
 import { useSearchStore } from "@/stores/searchStore";
+import { useEditModeStore } from "@/stores/editModeStore";
+import { useSupabaseSession } from "@/provider/supabaseProvider";
+import { isAdmin } from "@/utils/isAdmin";
 import { useSearchSongs, useLayoutHandlers } from "@/hooks";
 import { createMenuItems } from "@/constants/layout/menuItems";
 import {
@@ -36,13 +39,17 @@ export default function Layout({ children, toggleButtons = [] }: LayoutProps) {
     closeFilter,
   } = useLayoutStore();
   const { searchQuery, setSearchQuery, clearSearch } = useSearchStore();
+  const { isEditMode } = useEditModeStore();
+  const { session } = useSupabaseSession();
+  const userId = session?.user.id;
+  const isUserAdmin = isAdmin(userId);
   const { searchResults, isLoading: isSearchLoading } =
     useSearchSongs(searchQuery);
   const { handleMenuClick, handleSongClick } = useLayoutHandlers();
 
   const menuItems = useMemo(
-    () => createMenuItems(handleMenuClick),
-    [handleMenuClick],
+    () => createMenuItems(handleMenuClick, isEditMode, isUserAdmin),
+    [handleMenuClick, isEditMode, isUserAdmin],
   );
 
   const defaultToggleButtons = useMemo(

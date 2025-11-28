@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { useLayoutStore } from "@/stores/layoutStore";
 import { useNavigation } from "@/hooks";
+import { useEditModeStore } from "@/stores/editModeStore";
 import type { SongData } from "@/api/songdb";
 import { copyToClipboard } from "@/utils";
 
@@ -8,12 +9,14 @@ export const useLayoutHandlers = () => {
   const { closeLeftMenu } = useLayoutStore();
   const { closeSearch } = useLayoutStore();
   const { navigateToAuth } = useNavigation();
+  const { toggleEditMode } = useEditModeStore();
 
   const handleMenuClick = useCallback(
     (action: string) => {
       closeLeftMenu();
       switch (action) {
         case "edit":
+          toggleEditMode();
           break;
         case "login":
         case "profile":
@@ -21,7 +24,7 @@ export const useLayoutHandlers = () => {
           break;
       }
     },
-    [closeLeftMenu, navigateToAuth],
+    [closeLeftMenu, navigateToAuth, toggleEditMode],
   );
 
   const handleSongClick = useCallback(

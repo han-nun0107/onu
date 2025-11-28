@@ -1,5 +1,5 @@
 import CloseIcon from "@/assets/icons/modal/close.svg?react";
-import { Icon, Portal } from "@/components";
+import { Button, Icon, Portal } from "@/components";
 import { PORTAL_CONTAINER_ID } from "@/constants";
 import { Z_INDEX } from "@/foundations";
 import { useModal } from "@/hooks";
@@ -60,14 +60,15 @@ const Modal = ({
             )}
             {children}
             {isCloseable && (
-              <button
+              <Button
                 type="button"
+                variant="MODAL_CLOSE"
                 aria-label="닫기"
                 onClick={handleClose}
                 className="absolute top-4 right-4 sm:top-6 sm:right-6 md:top-10 md:right-8"
               >
                 <Icon icon={CloseIcon} size={24} />
-              </button>
+              </Button>
             )}
           </div>
         </FocusLock>

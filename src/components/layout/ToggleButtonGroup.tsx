@@ -1,3 +1,4 @@
+import { Button } from "@/components";
 import { cn } from "@/utils";
 
 type ToggleButton = {
@@ -26,18 +27,15 @@ export default function ToggleButtonGroup({
       {buttons.map((button, index) => {
         const gradient = buttonGradients[index] || "from-gray-400 to-gray-500";
         return (
-          <button
+          <Button
             key={button.id}
             onClick={button.onClick}
-            className={cn(
-              "flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br text-white shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl",
-              gradient,
-              button.active && "ring-4 ring-white/50",
-            )}
+            variant="TOGGLE_BUTTON"
+            className={cn(gradient, button.active && "ring-4 ring-white/50")}
             aria-label={button.label}
           >
             {button.icon}
-          </button>
+          </Button>
         );
       })}
     </div>

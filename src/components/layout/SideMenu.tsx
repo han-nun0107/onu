@@ -1,17 +1,7 @@
 import { Button } from "@/components";
+import { CloseIcon } from "@/constants/layout/icons";
 import { cn } from "@/utils";
-
-type MenuItem = {
-  icon: React.ReactNode;
-  label: string;
-  onClick: () => void;
-};
-
-type SideMenuProps = {
-  isOpen: boolean;
-  onClose: () => void;
-  menuItems: MenuItem[];
-};
+import type { SideMenuProps } from "@/types/layout/sideMenu";
 
 export default function SideMenu({
   isOpen,
@@ -36,20 +26,7 @@ export default function SideMenu({
               variant="ICON_BUTTON"
               aria-label="메뉴 닫기"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
+              <CloseIcon />
             </Button>
           </div>
           <nav className="flex flex-col gap-2">

@@ -1,4 +1,3 @@
-import { useState, useRef, useMemo } from "react";
 import {
   Card,
   GridContainer,
@@ -9,49 +8,24 @@ import {
 import {
   useAllSongs,
   useSinger,
-  useInfinityScroll,
   useModalState,
+  useInfiniteList,
 } from "@/hooks";
 
-const ITEMS_PER_PAGE = 20;
-
 export default function Singer() {
-  const [displayCount, setDisplayCount] = useState(ITEMS_PER_PAGE);
-  const observerRef = useRef<HTMLDivElement | null>(null);
   const { data: allSongs, isLoading } = useAllSongs();
   const { singers } = useSinger(allSongs);
   const { getIsOpen, setIsOpen } = useModalState();
-
-  const displayedSingers = useMemo(() => {
-    return singers.slice(0, displayCount);
-  }, [singers, displayCount]);
-
-  const hasNextPage = displayCount < singers.length;
-
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-
-  const fetchNextPage = () => {
-    if (hasNextPage && !isLoadingMore) {
-      setIsLoadingMore(true);
-      setTimeout(() => {
-        setDisplayCount((prev) => prev + ITEMS_PER_PAGE);
-        setIsLoadingMore(false);
-      }, 100);
-    }
-  };
-
-  useInfinityScroll({
-    observerRef,
-    fetchNextPage,
+  const {
+    displayedItems: displayedSingers,
     hasNextPage,
-    isFetching: isLoadingMore,
-  });
+    observerRef,
+    isLoadingMore,
+  } = useInfiniteList(singers);
 
   if (isLoading) {
     return <LoadingState />;
   }
-
-  console.log(displayedSingers);
 
   return (
     <GridContainer>

@@ -4,6 +4,7 @@ import {
   GridContainer,
   LoadingState,
   LoadingIndicator,
+  EditSong,
 } from "@/components";
 import {
   useAllSongs,
@@ -11,17 +12,18 @@ import {
   useInfiniteScrollDisplay,
   useSearchSongs,
 } from "@/hooks";
-import { getSongUniqueKey } from "@/utils";
+import { getSongUniqueKey, transformSongToCardData } from "@/utils";
 import { useSortFilterStore } from "@/stores/sortFilterStore";
 import { useSearchStore } from "@/stores/searchStore";
+import { useEditModeStore } from "@/stores/editModeStore";
 
 export default function Song() {
   const { sortType, filterType } = useSortFilterStore();
   const { searchQuery } = useSearchStore();
   const { data: allSongsData, isLoading } = useAllSongs();
-  const { searchResults, isLoading: isSearchLoading } = useSearchSongs(searchQuery);
+  const { searchResults, isLoading: isSearchLoading } =
+    useSearchSongs(searchQuery);
 
-  // 검색어가 있으면 검색 결과를, 없으면 전체 노래를 사용
   const rawSongs = useMemo(() => {
     if (searchQuery.trim()) {
       return searchResults;
@@ -35,39 +37,38 @@ export default function Song() {
     displayedItems: displayedSongs,
     hasMore,
     observerRef,
-  } = useInfiniteScrollDisplay(processedSongs, [sortType, filterType, searchQuery]);
+  } = useInfiniteScrollDisplay(processedSongs, [
+    sortType,
+    filterType,
+    searchQuery,
+  ]);
+
+  const { isEditMode } = useEditModeStore();
 
   if (isLoading || isSearchLoading) {
     return <LoadingState />;
   }
 
   return (
-    <GridContainer>
-      {displayedSongs.map((song) => (
-        <Card
-          key={getSongUniqueKey(song)}
-          type="musicCard"
-          data={{
-            title: song.title || "",
-            singer: song.processedSinger,
-            categories: song.processedCategories,
-            noteKey: song.key,
-            image: song.thumbnail_url,
-            completed: song.completed,
-            recommend: song.recommend,
-            bomb: song.bomb,
-            youtubeUrl: song.inst || "",
-          }}
-        />
-      ))}
-      {hasMore && (
-        <div
-          ref={observerRef}
-          className="flex h-10 w-full items-center justify-center"
-        >
-          <LoadingIndicator />
-        </div>
-      )}
-    </GridContainer>
+    <>
+      {isEditMode && <EditSong />}
+      <GridContainer>
+        {displayedSongs.map((song) => (
+          <Card
+            key={getSongUniqueKey(song)}
+            type="musicCard"
+            data={transformSongToCardData(song)}
+          />
+        ))}
+        {hasMore && (
+          <div
+            ref={observerRef}
+            className="flex h-10 w-full items-center justify-center"
+          >
+            <LoadingIndicator />
+          </div>
+        )}
+      </GridContainer>
+    </>
   );
 }

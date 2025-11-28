@@ -1,0 +1,180 @@
+import { useState, useCallback, useEffect } from "react";
+import type { FormEvent } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+import { supabase } from "@/supabase/supabase";
+import { convertYoutubeToThumbnail } from "@/utils";
+import type { FormData } from "@/types/admin/editSong";
+import { INITIAL_FORM_DATA } from "@/constants/admin/editSong";
+import { useEditSongStore } from "@/stores/editSongStore";
+
+export const useEditSong = () => {
+  const queryClient = useQueryClient();
+  const { songToEdit, clearSongToEdit } = useEditSongStore();
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState<FormData>(INITIAL_FORM_DATA);
+
+  // songToEdit가 변경되면 폼에 데이터 채우기
+  useEffect(() => {
+    if (songToEdit) {
+      // 가수명: artist 또는 singer 필드 확인
+      const artist =
+        (songToEdit.artist as string) || (songToEdit.singer as string) || "";
+
+      // 카테고리: categories 또는 category 필드 확인
+      let categories = "";
+      if (songToEdit.categories) {
+        if (Array.isArray(songToEdit.categories)) {
+          categories = songToEdit.categories
+            .filter((cat): cat is string => typeof cat === "string")
+            .join(", ");
+        } else if (typeof songToEdit.categories === "string") {
+          categories = songToEdit.categories;
+        }
+      } else if (songToEdit.category) {
+        if (Array.isArray(songToEdit.category)) {
+          categories = songToEdit.category
+            .filter((cat): cat is string => typeof cat === "string")
+            .join(", ");
+        } else if (typeof songToEdit.category === "string") {
+          categories = songToEdit.category;
+        }
+      }
+
+      setFormData({
+        title: (songToEdit.title as string) || "",
+        artist,
+        categories,
+        key: songToEdit.key || "",
+        notes: (songToEdit.notes as string) || "",
+        completed: songToEdit.completed || false,
+        recommend: songToEdit.recommend || false,
+        bomb: songToEdit.bomb || false,
+        inst: (songToEdit.inst as string) || "",
+        thumbnail_url: songToEdit.thumbnail_url || "",
+      });
+      setEditingId(songToEdit.id || null);
+    }
+  }, [songToEdit]);
+
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const { name, value, type } = e.target;
+      setFormData((prev) => ({
+        ...prev,
+        [name]:
+          type === "checkbox"
+            ? (e.target as HTMLInputElement).checked
+            : type === "number"
+              ? parseInt(value) || 0
+              : value,
+      }));
+    },
+    [],
+  );
+
+  const preparePayload = useCallback((data: FormData) => {
+    return {
+      title: data.title.trim(),
+      artist: data.artist.trim(),
+      categories: data.categories
+        .split(",")
+        .map((x) => x.trim())
+        .filter(Boolean),
+      key: data.key.trim(),
+      transpose: 0,
+      notes: data.notes.trim(),
+      completed: data.completed,
+      recommend: data.recommend,
+      bomb: data.bomb,
+      inst: data.inst.trim(),
+      thumbnail_url:
+        data.thumbnail_url.trim() ||
+        convertYoutubeToThumbnail(data.inst.trim()),
+    };
+  }, []);
+
+  const handleSubmit = useCallback(
+    async (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      setIsSubmitting(true);
+
+      const payload = preparePayload(formData);
+
+      try {
+        let error = null;
+
+        if (editingId) {
+          const updatePayload = { ...payload, id: editingId };
+          ({ error } = await supabase
+            .from("onusongdb")
+            .upsert([updatePayload] as never, { onConflict: "id" }));
+        } else {
+          ({ error } = await supabase
+            .from("onusongdb")
+            .insert([payload] as never));
+        }
+
+        if (error) {
+          toast.error(error.message || "오류가 발생했습니다.");
+        } else {
+          toast.success(
+            editingId ? "노래가 수정되었습니다." : "노래가 추가되었습니다.",
+          );
+          resetForm();
+          await queryClient.invalidateQueries({ queryKey: ["songs"] });
+        }
+      } catch (error) {
+        toast.error("알 수 없는 오류가 발생했습니다.");
+        console.error(error);
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [formData, editingId, preparePayload, queryClient],
+  );
+
+  const resetForm = useCallback(() => {
+    setFormData(INITIAL_FORM_DATA);
+    setEditingId(null);
+    clearSongToEdit();
+  }, [clearSongToEdit]);
+
+  const deleteSong = useCallback(
+    async (songId: number) => {
+      if (!confirm("정말로 이 노래를 삭제하시겠습니까?")) {
+        return;
+      }
+
+      try {
+        const { error } = await supabase
+          .from("onusongdb")
+          .delete()
+          .eq("id", songId);
+
+        if (error) {
+          toast.error(error.message || "삭제 중 오류가 발생했습니다.");
+        } else {
+          toast.success("노래가 삭제되었습니다.");
+          await queryClient.invalidateQueries({ queryKey: ["songs"] });
+        }
+      } catch (error) {
+        toast.error("알 수 없는 오류가 발생했습니다.");
+        console.error(error);
+      }
+    },
+    [queryClient],
+  );
+
+  return {
+    formData,
+    editingId,
+    isSubmitting,
+    handleInputChange,
+    handleSubmit,
+    resetForm,
+    setEditingId,
+    deleteSong,
+  };
+};

@@ -12,6 +12,8 @@ type ButtonProps = {
   variant?: ButtonVariant;
   className?: string;
   style?: React.CSSProperties;
+  type?: "button" | "submit" | "reset";
+  "aria-label"?: string;
 };
 
 export default function Button({
@@ -21,12 +23,15 @@ export default function Button({
   variant = DEFAULT_BUTTON_VARIANT,
   className,
   style,
+  type = "button",
+  "aria-label": ariaLabel,
 }: ButtonProps) {
   return (
     <button
-      type="button"
+      type={type}
       onClick={onClick}
       disabled={disabled}
+      aria-label={ariaLabel}
       className={cn(
         "cursor-pointer",
         BUTTON_VARIANTS[variant],

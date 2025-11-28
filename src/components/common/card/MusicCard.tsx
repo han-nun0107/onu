@@ -1,9 +1,15 @@
-import { Button, Icon, Tag } from "@/components";
+import { useCallback } from "react";
+import { Button, Icon, Tag, AdminOnly } from "@/components";
 import HeartIcon from "@/assets/icons/heart/heartButton.svg?react";
 import FullHeartIcon from "@/assets/icons/heart/fullHeart.svg?react";
-import { useMusicCard } from "@/hooks";
+import {
+  useMusicCard,
+  useMusicCardActions,
+  useMusicCardHandlers,
+} from "@/hooks";
 import { useAuthStore } from "@/stores/authStore";
 import { cn } from "@/utils";
+import type { SongData } from "@/api/songdb";
 
 type MusicCardProps = {
   title: string;
@@ -15,6 +21,8 @@ type MusicCardProps = {
   recommend?: boolean;
   bomb?: boolean;
   youtubeUrl: string;
+  songId?: number;
+  songData?: SongData;
 };
 
 export default function MusicCard({
@@ -27,14 +35,23 @@ export default function MusicCard({
   recommend,
   bomb,
   youtubeUrl,
+  songId,
+  songData,
 }: MusicCardProps) {
   const { isLiked, isCopied, thumbnail, handleHeartClick, handleImageClick } =
     useMusicCard(image, title);
   const session = useAuthStore((state) => state.session);
+  const { handleEditClick, handleDeleteClick } = useMusicCardActions(
+    songId,
+    songData,
+    title,
+  );
+  const { handleEditButtonClick, handleDeleteButtonClick } =
+    useMusicCardHandlers(handleEditClick, handleDeleteClick);
 
-  const handleYoutubeClick = () => {
+  const handleYoutubeClick = useCallback(() => {
     window.open(youtubeUrl, "_blank");
-  };
+  }, [youtubeUrl]);
   return (
     <article className="flex h-auto w-full max-w-[224.4px] min-w-[224.4px] flex-col items-center justify-center">
       <div className="flex h-70 w-full flex-col gap-1.5 overflow-hidden rounded-xl shadow-lg transition-all duration-300 hover:scale-105">
@@ -57,6 +74,24 @@ export default function MusicCard({
             </span>
           </div>
           <div className="absolute top-2 right-2 z-10 flex items-center gap-1">
+            <AdminOnly>
+              <div className="flex gap-1 rounded-lg bg-black/50 p-1 backdrop-blur-sm">
+                <Button
+                  onClick={handleEditButtonClick}
+                  variant="EDIT_BUTTON"
+                  aria-label="수정"
+                >
+                  수정
+                </Button>
+                <Button
+                  onClick={handleDeleteButtonClick}
+                  variant="DELETE_BUTTON"
+                  aria-label="삭제"
+                >
+                  삭제
+                </Button>
+              </div>
+            </AdminOnly>
             {completed && (
               <Tag
                 type="badge"
