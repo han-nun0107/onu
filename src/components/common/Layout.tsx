@@ -30,7 +30,6 @@ export default function Layout({ children, toggleButtons = [] }: LayoutProps) {
     isSortOpen,
     isFilterOpen,
     toggleLeftMenu,
-    toggleSearch,
     toggleSort,
     toggleFilter,
     closeLeftMenu,
