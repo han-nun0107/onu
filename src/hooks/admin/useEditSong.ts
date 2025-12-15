@@ -127,14 +127,21 @@ export const useEditSong = () => {
   const resetForm = useCallback(() => {
     setFormData(INITIAL_FORM_DATA);
     setEditingId(null);
+    setIsSubmitting(false); // 🔥 이것 추가!
     clearSongToEdit();
   }, [clearSongToEdit]);
 
   const handleSubmit = useCallback(
     async (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      setIsSubmitting(true);
 
+      // 중복 제출 방지
+      if (isSubmitting) {
+        console.log("Already submitting, ignoring duplicate request");
+        return;
+      }
+
+      setIsSubmitting(true);
       const payload = preparePayload(formData);
 
       try {
@@ -145,35 +152,38 @@ export const useEditSong = () => {
             .upsert([updatePayload] as never, { onConflict: "id" });
 
           if (error) {
+            console.error("Update error:", error);
             toast.error(error.message || "수정 중 오류가 발생했습니다.");
+            setIsSubmitting(false); // 🔥 에러 시에도 리셋
             return;
           }
 
           toast.success("노래가 수정되었습니다.");
-          queryClient.invalidateQueries({ queryKey: ["songs"] });
-          resetForm();
+          await queryClient.invalidateQueries({ queryKey: ["songs"] });
+          resetForm(); // resetForm 안에서 setIsSubmitting(false) 호출됨
         } else {
           const { error } = await supabase
             .from("onusongdb")
             .insert([payload] as never);
 
           if (error) {
+            console.error("Insert error:", error);
             toast.error(error.message || "추가 중 오류가 발생했습니다.");
+            setIsSubmitting(false); // 🔥 에러 시에도 리셋
             return;
           }
 
           toast.success("노래가 추가되었습니다.");
-          queryClient.invalidateQueries({ queryKey: ["songs"] });
-          resetForm();
+          await queryClient.invalidateQueries({ queryKey: ["songs"] });
+          resetForm(); // resetForm 안에서 setIsSubmitting(false) 호출됨
         }
       } catch (error) {
         console.error("Submit error:", error);
         toast.error("알 수 없는 오류가 발생했습니다.");
-      } finally {
-        setIsSubmitting(false);
+        setIsSubmitting(false); // 🔥 catch에서도 리셋
       }
     },
-    [formData, editingId, preparePayload, queryClient, resetForm],
+    [formData, editingId, preparePayload, queryClient, resetForm, isSubmitting],
   );
 
   const deleteSong = useCallback(
