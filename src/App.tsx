@@ -8,7 +8,16 @@ import { ToastContainer } from "react-toastify";
 import { SupabaseProvider } from "@/provider/supabaseProvider";
 
 function App() {
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        gcTime: 1000 * 60 * 10,
+        staleTime: 1000 * 60 * 5,
+        refetchOnWindowFocus: false,
+        retry: 2,
+      },
+    },
+  });
   const initializeAuth = useAuthStore((state) => state.initializeAuth);
 
   useEffect(() => {
