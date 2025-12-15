@@ -30,7 +30,7 @@ export const useLayoutHandlers = () => {
   const handleSongClick = useCallback(
     async (song: SongData) => {
       const title = song.title || "제목 없음";
-      const textToCopy = `신청 - ${title}`;
+      const textToCopy = `신청 ${title}`;
       await copyToClipboard(textToCopy, `${title}을(를) 복사했습니다.`);
       closeSearch();
     },

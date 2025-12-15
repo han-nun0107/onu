@@ -12,7 +12,7 @@ export function useMusicCard(image: string, title: string) {
   };
 
   const handleImageClick = async () => {
-    const textToCopy = `신청 - ${title}`;
+    const textToCopy = `신청 ${title}`;
     try {
       await navigator.clipboard.writeText(textToCopy);
       setIsCopied(true);
