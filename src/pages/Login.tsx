@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components";
 import { useLogin } from "@/hooks/login/useLogin";
 import { Link } from "react-router";
@@ -7,10 +7,22 @@ export default function Login() {
   const [ageChecked, setAgeChecked] = useState(false);
   const [consentChecked, setConsentChecked] = useState(false);
   const { handleLogin, errorMessage, isLoading } = useLogin();
-  const isButtonDisabled = !(ageChecked && consentChecked) || isLoading;
 
-  // 모든 체크박스가 체크되었는지 확인
-  const hasAllConsent = ageChecked && consentChecked;
+  const hasAllConsent = useMemo(
+    () => ageChecked && consentChecked,
+    [ageChecked, consentChecked],
+  );
+
+  const isButtonDisabled = useMemo(
+    () => !hasAllConsent || isLoading,
+    [hasAllConsent, isLoading],
+  );
+
+  const buttonClassName = useMemo(
+    () =>
+      `${isLoading ? "cursor-wait" : ""} ${hasAllConsent ? "bg-white" : "bg-gray-200/50"}`,
+    [isLoading, hasAllConsent],
+  );
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-purple-200 via-blue-200 to-purple-300 p-4">
@@ -76,9 +88,9 @@ export default function Login() {
 
         <Button
           variant="LOGIN_BUTTON"
-          onClick={() => handleLogin(isButtonDisabled, hasAllConsent)}
+          onClick={() => handleLogin(hasAllConsent)}
           disabled={isButtonDisabled}
-          className={`${isLoading ? "cursor-wait" : ""} ${ageChecked && consentChecked ? "bg-white" : "bg-gray-200/50"}`}
+          className={buttonClassName}
         >
           <div className="flex h-5 w-5 shrink-0 items-center justify-center">
             <svg
