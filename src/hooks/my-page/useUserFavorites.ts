@@ -33,38 +33,13 @@ export const useUserFavorites = (userId: string | undefined) => {
 
         if (abortController.signal.aborted) return;
 
-        const favList =
+        // favorites가 이미 FavoriteItem[] 형태로 저장되어 있음
+        const items: FavoriteItem[] =
           profile &&
           Array.isArray((profile as { favorites?: unknown[] }).favorites)
-            ? ((profile as { favorites: unknown[] }).favorites as number[])
+            ? ((profile as { favorites: unknown[] })
+                .favorites as FavoriteItem[])
             : [];
-
-        let favSongTitles: string[] = [];
-
-        if (favList.length > 0) {
-          const { data: songs } = await supabase
-            .from("onusongdb")
-            .select("id, title, artist")
-            .in("id", favList.map(Number));
-
-          if (abortController.signal.aborted) return;
-
-          favSongTitles =
-            songs?.map(
-              (s: { title: string; artist: string }) =>
-                `${s.title} — ${s.artist}`,
-            ) || [];
-        }
-
-        if (abortController.signal.aborted) return;
-
-        const items: FavoriteItem[] = favSongTitles.map((title) => {
-          const [song, ...singerParts] = title.split(" — ");
-          return {
-            song: song.trim(),
-            singer: singerParts.join(" — ").trim(),
-          };
-        });
 
         setFavoriteItems(items);
       } catch (error) {

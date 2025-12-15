@@ -39,7 +39,7 @@ export default function MusicCard({
   songData,
 }: MusicCardProps) {
   const { isLiked, isCopied, thumbnail, handleHeartClick, handleImageClick } =
-    useMusicCard(image, title);
+    useMusicCard(image, title, singer);
   const session = useAuthStore((state) => state.session);
   const { handleEditClick, handleDeleteClick } = useMusicCardActions(
     songId,

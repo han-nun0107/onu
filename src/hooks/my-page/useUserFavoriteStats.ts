@@ -11,7 +11,7 @@ export const useUserFavoriteStats = (favoriteItems: FavoriteItem[]) => {
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     const endIndex = startIndex + ITEMS_PER_PAGE;
     return favoriteItems.slice(startIndex, endIndex);
-  }, [currentPage]);
+  }, [currentPage, favoriteItems]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);

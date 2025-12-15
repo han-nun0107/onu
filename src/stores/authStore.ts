@@ -26,6 +26,9 @@ type AuthState = {
   fetchUserProfile: (userId: string) => Promise<void>;
   ensureUserProfileStats: (userId: string) => Promise<void>;
   signOut: () => Promise<void>;
+  deleteAccount: (
+    userId: string,
+  ) => Promise<{ success: boolean; error?: string }>;
 };
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -137,6 +140,58 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       });
     } catch (error) {
       console.error("Sign out error:", error);
+    }
+  },
+
+  deleteAccount: async (userId: string) => {
+    try {
+      // user_profile_stats에서 사용자 데이터 삭제
+      const { error: profileError } = await supabase
+        .from("user_profile_stats")
+        .delete()
+        .eq("user_id", userId);
+
+      if (profileError) {
+        console.error("Error deleting user profile stats:", profileError);
+        return { success: false, error: profileError.message };
+      }
+
+      // users 테이블에서 사용자 데이터 삭제
+      const { error: userError } = await supabase
+        .from("users")
+        .delete()
+        .eq("id", userId);
+
+      if (userError) {
+        console.error("Error deleting user from users table:", userError);
+        // users 테이블이 없거나 삭제 실패해도 계속 진행
+        // (일부 환경에서는 users 테이블이 없을 수 있음)
+      }
+
+      // Supabase Auth에서 로그아웃
+      const { error: authError } = await supabase.auth.signOut();
+
+      if (authError) {
+        console.error("Error signing out:", authError);
+      }
+
+      // 상태 초기화
+      set({
+        session: null,
+        user: null,
+        userProfile: null,
+      });
+
+      return { success: true };
+    } catch (error) {
+      console.error("Delete account error:", error);
+      return {
+        success: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : "알 수 없는 오류가 발생했습니다.",
+      };
     }
   },
 }));
