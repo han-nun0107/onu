@@ -15,6 +15,8 @@ export const INITIAL_FORM_DATA: FormData = {
   bomb: false,
   inst: "",
   thumbnail_url: "",
+  difficulty: 0,
+  transpose: 0,
 };
 
 export const FORM_FIELDS: FormField[] = [
@@ -41,6 +43,20 @@ export const FORM_FIELDS: FormField[] = [
     placeholder: "예: C, Dm, F#m",
     required: true,
     span: "full",
+  },
+  {
+    id: "difficulty",
+    label: "난이도",
+    type: "number",
+    placeholder: "0",
+    span: "half",
+  },
+  {
+    id: "transpose",
+    label: "반음 조정",
+    type: "number",
+    placeholder: "0",
+    span: "half",
   },
   {
     id: "categories",

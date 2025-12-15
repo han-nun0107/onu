@@ -9,6 +9,8 @@ export type FormData = {
   bomb: boolean;
   inst: string;
   thumbnail_url: string;
+  difficulty: number;
+  transpose: number;
 };
 
 export type FormField = {

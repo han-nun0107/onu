@@ -72,6 +72,8 @@ export const useEditSong = () => {
         bomb: songToEdit.bomb || false,
         inst: (songToEdit.inst as string) || "",
         thumbnail_url: songToEdit.thumbnail_url || "",
+        difficulty: (songToEdit.difficulty as number) ?? 0,
+        transpose: (songToEdit.transpose as number) ?? 0,
       });
       setEditingId(songToEdit.id || null);
     }
@@ -111,7 +113,8 @@ export const useEditSong = () => {
       artist: data.artist.trim(),
       categories: categoriesValue,
       key: data.key.trim(),
-      transpose: 0,
+      transpose: data.transpose ?? 0,
+      difficulty: data.difficulty ?? 0,
       notes: data.notes.trim(),
       completed: data.completed,
       recommend: data.recommend,

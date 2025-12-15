@@ -22,6 +22,7 @@ export default function EditSong() {
   const renderFormField = useCallback(
     (field: FormField) => {
       const isTextarea = field.type === "textarea";
+      const isNumber = field.type === "number";
       const spanClass = field.span === "full" ? "md:col-span-2" : "";
 
       return (
@@ -48,11 +49,17 @@ export default function EditSong() {
               type={field.type}
               id={field.id}
               name={field.id}
-              value={formData[field.id] as string}
+              value={
+                isNumber
+                  ? (formData[field.id] as number) || 0
+                  : (formData[field.id] as string)
+              }
               onChange={handleInputChange}
               required={field.required}
               className={INPUT_CLASSES}
               placeholder={field.placeholder}
+              min={isNumber ? -12 : undefined}
+              max={isNumber ? 12 : undefined}
             />
           )}
         </div>
