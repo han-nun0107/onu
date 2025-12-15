@@ -94,17 +94,16 @@ export const useEditSong = () => {
   );
 
   const preparePayload = useCallback((data: FormData) => {
-    let categoriesValue: string;
+    let categoriesValue: string[];
     if (typeof data.categories === "string" && data.categories.trim()) {
-      const categoriesArray = data.categories
+      categoriesValue = data.categories
         .split(",")
         .map((cat) => cat.trim())
         .filter((cat) => cat.length > 0);
-      categoriesValue = JSON.stringify(categoriesArray);
     } else if (Array.isArray(data.categories)) {
-      categoriesValue = JSON.stringify(data.categories);
-    } else {
       categoriesValue = data.categories;
+    } else {
+      categoriesValue = [];
     }
 
     return {
@@ -127,7 +126,7 @@ export const useEditSong = () => {
   const resetForm = useCallback(() => {
     setFormData(INITIAL_FORM_DATA);
     setEditingId(null);
-    setIsSubmitting(false);  
+    setIsSubmitting(false);
     clearSongToEdit();
   }, [clearSongToEdit]);
 
@@ -149,15 +148,15 @@ export const useEditSong = () => {
             .from("onusongdb")
             .upsert([updatePayload] as never, { onConflict: "id" });
 
-          if (error) {    
+          if (error) {
             toast.error(error.message || "수정 중 오류가 발생했습니다.");
-            setIsSubmitting(false);  
+            setIsSubmitting(false);
             return;
           }
 
           toast.success("노래가 수정되었습니다.");
           await queryClient.invalidateQueries({ queryKey: ["songs"] });
-          resetForm();  
+          resetForm();
         } else {
           const { error } = await supabase
             .from("onusongdb")
@@ -165,17 +164,17 @@ export const useEditSong = () => {
 
           if (error) {
             toast.error(error.message || "추가 중 오류가 발생했습니다.");
-            setIsSubmitting(false);  
+            setIsSubmitting(false);
             return;
           }
 
           toast.success("노래가 추가되었습니다.");
           await queryClient.invalidateQueries({ queryKey: ["songs"] });
-          resetForm();  
+          resetForm();
         }
       } catch (error) {
         toast.error("알 수 없는 오류가 발생했습니다.");
-        setIsSubmitting(false); 
+        setIsSubmitting(false);
       }
     },
     [formData, editingId, preparePayload, queryClient, resetForm, isSubmitting],
