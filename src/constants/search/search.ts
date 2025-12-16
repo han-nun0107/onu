@@ -338,6 +338,12 @@ export const SEARCH_MAPPINGS: Record<string, string[]> = {
   "The Chainsmokers": ["The Chainsmokers", "체인스모커스", "체인스모커스"],
   "The Weeknd": ["The Weeknd", "위켄드"],
   "Tones and I": ["Tones and I", "톤즈 앤 아이", "톤즈앤아이"],
+  "Henry Moodie": ["Henry Moodie", "헨리 무디", "헨리무디"],
+  "Smash Into Pieces": [
+    "Smash Into Pieces",
+    "스매시 인투 피스",
+    "스매시인투피스",
+  ],
   // 장르 매핑
   케이팝: ["케이팝", "kpop", "K-pop"],
   팝: ["팝", "pop"],
