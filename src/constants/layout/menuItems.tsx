@@ -10,6 +10,7 @@ export const createMenuItems = (
   onMenuClick: (action: string) => void,
   isEditMode: boolean = false,
   isAdmin: boolean = false,
+  isLoggedIn: boolean = false,
 ): MenuItem[] => {
   const menuItems: MenuItem[] = [];
 
@@ -39,7 +40,22 @@ export const createMenuItems = (
 
   menuItems.push(
     {
-      icon: (
+      icon: isLoggedIn ? (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+          />
+        </svg>
+      ) : (
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="h-5 w-5"
@@ -55,8 +71,8 @@ export const createMenuItems = (
           />
         </svg>
       ),
-      label: "연동&로그인",
-      onClick: () => onMenuClick("login"),
+      label: isLoggedIn ? "로그아웃" : "연동&로그인",
+      onClick: () => onMenuClick(isLoggedIn ? "logout" : "login"),
     },
     {
       icon: (

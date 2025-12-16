@@ -2,8 +2,10 @@ import { useCallback } from "react";
 import { useLayoutStore } from "@/stores/layoutStore";
 import { useNavigation } from "@/hooks";
 import { useEditModeStore } from "@/stores/editModeStore";
+import { supabase } from "@/supabase/supabase";
 import type { SongData } from "@/api/songdb";
 import { copyToClipboard } from "@/utils";
+import { toast } from "react-toastify";
 
 export const useLayoutHandlers = () => {
   const { closeLeftMenu, toggleContact } = useLayoutStore();
@@ -12,7 +14,7 @@ export const useLayoutHandlers = () => {
   const { toggleEditMode } = useEditModeStore();
 
   const handleMenuClick = useCallback(
-    (action: string) => {
+    async (action: string) => {
       closeLeftMenu();
       switch (action) {
         case "edit":
@@ -21,6 +23,18 @@ export const useLayoutHandlers = () => {
         case "login":
         case "profile":
           navigateToAuth();
+          break;
+        case "logout":
+          try {
+            const { error } = await supabase.auth.signOut();
+            if (error) {
+              throw error;
+            }
+            toast.success("로그아웃되었습니다.");
+          } catch (error) {
+            console.error("로그아웃 오류:", error);
+            toast.error("로그아웃 중 오류가 발생했습니다.");
+          }
           break;
         case "contact":
           toggleContact();

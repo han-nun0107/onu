@@ -46,13 +46,14 @@ export default function Layout({ children, toggleButtons = [] }: LayoutProps) {
   const { session } = useSupabaseSession();
   const userId = session?.user.id;
   const isUserAdmin = isAdmin(userId);
+  const isLoggedIn = !!session;
   const { searchResults, isLoading: isSearchLoading } =
     useSearchSongs(searchQuery);
   const { handleMenuClick, handleSongClick } = useLayoutHandlers();
 
   const menuItems = useMemo(
-    () => createMenuItems(handleMenuClick, isEditMode, isUserAdmin),
-    [handleMenuClick, isEditMode, isUserAdmin],
+    () => createMenuItems(handleMenuClick, isEditMode, isUserAdmin, isLoggedIn),
+    [handleMenuClick, isEditMode, isUserAdmin, isLoggedIn],
   );
 
   const defaultToggleButtons = useMemo(
