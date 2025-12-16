@@ -106,12 +106,17 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         return;
       }
 
+      // 한국 시간(KST, UTC+9)으로 변환
+      const now = new Date();
+      const koreaTime = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+      const koreaTimeISO = koreaTime.toISOString();
+
       const { error: updateError } = await supabase.from("users").upsert(
         [
           {
             id: userId,
             consentgiven: true,
-            consentat: new Date().toISOString(),
+            consentat: koreaTimeISO,
           },
         ] as never,
         { onConflict: "id" },

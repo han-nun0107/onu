@@ -7,46 +7,22 @@ import {
 } from "@/components/mypage";
 import { Button, Modal, ContactForm } from "@/components";
 import { useAuthStore } from "@/stores/authStore";
-import { useUserFavorites } from "@/hooks";
-import { toast } from "react-toastify";
+import { useUserFavorites, useDeleteAccount } from "@/hooks";
 
 export default function Mypage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const navigate = useNavigate();
   const userProfile = useAuthStore((state) => state.userProfile);
   const userId = useAuthStore((state) => state.user?.id);
-  const deleteAccount = useAuthStore((state) => state.deleteAccount);
   const { favoriteItems } = useUserFavorites(userId);
+  const { isDeleting, handleDeleteAccount } = useDeleteAccount();
 
   const favoriteSingsLength = favoriteItems.length;
 
-  const handleDeleteAccount = async () => {
-    if (!userId) {
-      toast.error("사용자 정보를 찾을 수 없습니다.");
-      return;
-    }
-
-    setIsDeleting(true);
-    try {
-      const result = await deleteAccount(userId);
-
-      // 모달 닫기
-      setIsDeleteModalOpen(false);
-
-      if (result.success) {
-        toast.success("회원 탈퇴가 완료되었습니다.");
-        navigate("/");
-      } else {
-        toast.error(result.error || "회원 탈퇴 중 오류가 발생했습니다.");
-      }
-    } catch (error) {
-      setIsDeleteModalOpen(false);
-      toast.error("회원 탈퇴 중 오류가 발생했습니다.");
-    } finally {
-      setIsDeleting(false);
-    }
+  const onDeleteAccount = async () => {
+    await handleDeleteAccount();
+    setIsDeleteModalOpen(false);
   };
 
   return (
@@ -140,7 +116,7 @@ export default function Mypage() {
           <div className="mt-2 flex w-full flex-col gap-3 sm:flex-row sm:justify-center">
             <Button
               variant="MY_PAGE_BUTTON"
-              onClick={handleDeleteAccount}
+              onClick={onDeleteAccount}
               disabled={isDeleting}
               className="w-full bg-red-500 px-6 py-3 text-base hover:bg-red-600 disabled:bg-red-300 sm:w-auto sm:min-w-[120px]"
             >

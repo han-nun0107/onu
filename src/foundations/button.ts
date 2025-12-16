@@ -62,7 +62,6 @@ export const BUTTON_VARIANTS = {
     "relative",
     "flex",
     "w-full",
-    "max-w-sm",
     "items-center",
     "justify-center",
     "gap-3",
@@ -220,6 +219,15 @@ export const BUTTON_VARIANTS = {
     "hover:shadow-xl",
     "ring-4",
     "ring-white/50",
+  ].join(" "),
+  LOGIN_METHOD_BUTTON: [
+    "flex-1",
+    "rounded-lg",
+    "px-4",
+    "py-2",
+    "text-sm",
+    "font-medium",
+    "transition-all",
   ].join(" "),
 } as const;
 

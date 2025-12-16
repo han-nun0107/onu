@@ -1,6 +1,7 @@
 export { useModal } from "./modal/useModal";
 export { useUserFavoriteStats } from "./my-page/useUserFavoriteStats";
 export { useUserFavorites } from "./my-page/useUserFavorites";
+export { useDeleteAccount } from "./my-page/useDeleteAccount";
 export { useMusicCard } from "./song-page/useMusicCard";
 export { useMusicCardActions } from "./song-page/useMusicCardActions";
 export { useMusicCardHandlers } from "./song-page/useMusicCardHandlers";
@@ -22,3 +23,6 @@ export { useNavigation } from "./useNavigation";
 export { useLayoutHandlers } from "./layout/useLayoutHandlers";
 export { useEditSong } from "./admin/useEditSong";
 export { useContactForm } from "./contact/useContactForm";
+export { useSignUp } from "./auth/useSignUp";
+export { useEmailLogin } from "./auth/useEmailLogin";
+export { useLoginLogic } from "./login/useLoginLogic";

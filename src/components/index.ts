@@ -32,3 +32,6 @@ export { default as ToggleButtonGroup } from "./layout/ToggleButtonGroup";
 export { AdminGuard } from "./admin/AdminGuard";
 export { AdminOnly } from "./admin/AdminOnly";
 export { default as EditSong } from "./admin/EditSong";
+export { default as ConsentCheckbox } from "./login/ConsentCheckbox";
+export { default as LoginMethodButton } from "./login/LoginMethodButton";
+export { default as EmailLoginForm } from "./login/EmailLoginForm";
