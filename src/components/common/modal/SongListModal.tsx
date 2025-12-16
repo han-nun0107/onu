@@ -24,7 +24,7 @@ export default function SongListModal({
         {songs.length === 0 ? (
           <p className="text-gray-500">노래가 없습니다.</p>
         ) : (
-          songs.map((song, index) => {
+          songs.map((song) => {
             const songCategories = normalizeCategories(song);
             const singer = normalizeSinger(song);
             const tags = getSongTags(song);
@@ -50,9 +50,13 @@ export default function SongListModal({
               await copyToClipboard(textToCopy, `${title}을(를) 복사했습니다.`);
             };
 
+            const uniqueKey =
+              song.id ||
+              `${song.title || "unknown"}-${singer || "unknown"}-${song.thumbnail_url || song.inst || mainCategory || ""}`;
+
             return (
               <div
-                key={song.id || index}
+                key={uniqueKey}
                 className="cursor-pointer border-b border-gray-200 pb-3 last:border-b-0 sm:pb-4"
                 onClick={handleSongClick}
               >

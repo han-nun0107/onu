@@ -55,8 +55,8 @@ function Login() {
         </p>
 
         <ul className="list-disc space-y-1 pl-5 text-xs text-gray-700 sm:text-sm">
-          {PRIVACY_INFO_ITEMS.map((item, index) => (
-            <li key={index}>{item}</li>
+          {PRIVACY_INFO_ITEMS.map((item) => (
+            <li key={item}>{item}</li>
           ))}
         </ul>
 

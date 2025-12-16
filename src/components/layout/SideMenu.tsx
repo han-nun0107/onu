@@ -30,8 +30,12 @@ export default function SideMenu({
             </Button>
           </div>
           <nav className="flex flex-col gap-2">
-            {menuItems.map((item, index) => (
-              <Button key={index} onClick={item.onClick} variant="MENU_ITEM">
+            {menuItems.map((item) => (
+              <Button
+                key={item.label}
+                onClick={item.onClick}
+                variant="MENU_ITEM"
+              >
                 {item.icon}
                 <span className="font-medium">{item.label}</span>
               </Button>
