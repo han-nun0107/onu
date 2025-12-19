@@ -1,10 +1,8 @@
 import { useCallback, useState } from "react";
-import { useNavigate } from "react-router";
 import { supabase } from "@/supabase/supabase";
 import { saveConsentInfo } from "@/utils/consentStorage";
 
 export const useGoogleSignUp = () => {
-  const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
