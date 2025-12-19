@@ -1,6 +1,7 @@
 import { memo, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { Button, Input } from "@/components";
+import { Mail } from "lucide-react";
 
 type LoginFormData = {
   email: string;
@@ -72,20 +73,7 @@ const EmailLoginForm = memo(
           className={`w-full ${buttonClassName}`}
         >
           <div className="flex w-full items-center justify-center gap-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 text-gray-700"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-              />
-            </svg>
+            <Mail />
             <span className="text-gray-700">
               {isLoading ? "로그인 중..." : "로그인"}
             </span>
