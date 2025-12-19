@@ -25,4 +25,5 @@ export { useEditSong } from "./admin/useEditSong";
 export { useContactForm } from "./contact/useContactForm";
 export { useSignUp } from "./auth/useSignUp";
 export { useEmailLogin } from "./auth/useEmailLogin";
+export { useGoogleSignUp } from "./auth/useGoogleSignUp";
 export { useLoginLogic } from "./login/useLoginLogic";

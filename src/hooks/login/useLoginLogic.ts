@@ -5,8 +5,6 @@ import { useEmailLogin } from "@/hooks";
 type LoginMethod = "email" | "google";
 
 export const useLoginLogic = () => {
-  const [ageChecked, setAgeChecked] = useState(false);
-  const [consentChecked, setConsentChecked] = useState(false);
   const [loginMethod, setLoginMethod] = useState<LoginMethod>("email");
 
   const {
@@ -21,11 +19,6 @@ export const useLoginLogic = () => {
     isLoading: isEmailLoading,
   } = useEmailLogin();
 
-  const hasAllConsent = useMemo(
-    () => ageChecked && consentChecked,
-    [ageChecked, consentChecked],
-  );
-
   const isLoading = useMemo(
     () => (loginMethod === "email" ? isEmailLoading : isGoogleLoading),
     [loginMethod, isEmailLoading, isGoogleLoading],
@@ -36,61 +29,36 @@ export const useLoginLogic = () => {
     [loginMethod, emailErrorMessage, googleErrorMessage],
   );
 
-  const isButtonDisabled = useMemo(
-    () => !hasAllConsent || isLoading,
-    [hasAllConsent, isLoading],
-  );
+  const isButtonDisabled = useMemo(() => isLoading, [isLoading]);
 
   const buttonClassName = useMemo(
-    () =>
-      `${isLoading ? "cursor-wait" : ""} ${hasAllConsent ? "bg-white" : "bg-gray-200/50"}`,
-    [isLoading, hasAllConsent],
+    () => `${isLoading ? "cursor-wait" : ""} bg-white`,
+    [isLoading],
   );
 
   const onEmailSubmit = useCallback(
     async (email: string, password: string) => {
-      if (!hasAllConsent) {
-        return;
-      }
-      await handleEmailLogin(email, password, hasAllConsent);
+      await handleEmailLogin(email, password, true);
     },
-    [hasAllConsent, handleEmailLogin],
+    [handleEmailLogin],
   );
 
   const onGoogleLogin = useCallback(() => {
-    if (!hasAllConsent) {
-      return;
-    }
-    handleLogin(hasAllConsent);
-  }, [hasAllConsent, handleLogin]);
-
-  const handleConsentChange = useCallback(
-    (key: "ageChecked" | "consentChecked", checked: boolean) => {
-      if (key === "ageChecked") {
-        setAgeChecked(checked);
-      } else {
-        setConsentChecked(checked);
-      }
-    },
-    [],
-  );
+    handleLogin(true);
+  }, [handleLogin]);
 
   const handleLoginMethodChange = useCallback((method: LoginMethod) => {
     setLoginMethod(method);
   }, []);
 
   return {
-    ageChecked,
-    consentChecked,
     loginMethod,
-    hasAllConsent,
     isLoading,
     errorMessage,
     isButtonDisabled,
     buttonClassName,
     onEmailSubmit,
     onGoogleLogin,
-    handleConsentChange,
     handleLoginMethodChange,
   };
 };

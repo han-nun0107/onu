@@ -30,8 +30,21 @@ export const useEmailLogin = () => {
       });
 
       if (error) {
-        setErrorMessage(error.message || "로그인 중 오류가 발생했습니다.");
-        toast.error(error.message || "로그인 중 오류가 발생했습니다.");
+        let errorMsg = "로그인 중 오류가 발생했습니다.";
+
+        if (
+          error.message.includes("Invalid login credentials") ||
+          error.message.includes("Email not confirmed") ||
+          error.status === 400
+        ) {
+          errorMsg =
+            "이메일 또는 비밀번호가 올바르지 않습니다. 회원가입을 먼저 진행해주세요.";
+        } else {
+          errorMsg = error.message || errorMsg;
+        }
+
+        setErrorMessage(errorMsg);
+        toast.error(errorMsg);
         setIsLoading(false);
         return;
       }

@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { useNavigate } from "react-router";
 import { useLayoutStore } from "@/stores/layoutStore";
 import { useNavigation } from "@/hooks";
 import { useEditModeStore } from "@/stores/editModeStore";
@@ -8,6 +9,7 @@ import { copyToClipboard } from "@/utils";
 import { toast } from "react-toastify";
 
 export const useLayoutHandlers = () => {
+  const navigate = useNavigate();
   const { closeLeftMenu, toggleContact } = useLayoutStore();
   const { closeSearch } = useLayoutStore();
   const { navigateToAuth } = useNavigation();
@@ -21,6 +23,11 @@ export const useLayoutHandlers = () => {
           toggleEditMode();
           break;
         case "login":
+          navigate("/login");
+          break;
+        case "signup":
+          navigate("/signup");
+          break;
         case "profile":
           navigateToAuth();
           break;
@@ -41,7 +48,7 @@ export const useLayoutHandlers = () => {
           break;
       }
     },
-    [closeLeftMenu, navigateToAuth, toggleEditMode, toggleContact],
+    [closeLeftMenu, navigate, navigateToAuth, toggleEditMode, toggleContact],
   );
 
   const handleSongClick = useCallback(

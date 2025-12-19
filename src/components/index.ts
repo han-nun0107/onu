@@ -35,3 +35,4 @@ export { default as EditSong } from "./admin/EditSong";
 export { default as ConsentCheckbox } from "./login/ConsentCheckbox";
 export { default as LoginMethodButton } from "./login/LoginMethodButton";
 export { default as EmailLoginForm } from "./login/EmailLoginForm";
+export { default as GoogleIcon } from "./common/GoogleIcon";

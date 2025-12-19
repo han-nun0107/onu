@@ -1,8 +1,20 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router";
-import { Button, Input } from "@/components";
-import { useSignUp } from "@/hooks";
+import { Link, useNavigate } from "react-router";
+import {
+  Button,
+  Input,
+  ConsentCheckbox,
+  LoginMethodButton,
+} from "@/components";
+import GoogleIcon from "@/components/common/GoogleIcon";
+import { useSignUp, useGoogleSignUp } from "@/hooks";
+import { useAuthStore } from "@/stores/authStore";
+import { ArrowLeft, Mail } from "lucide-react";
+import {
+  CONSENT_CHECKBOXES,
+  PRIVACY_INFO_ITEMS,
+} from "@/constants/login/loginConstants";
 
 type SignUpFormData = {
   email: string;
@@ -10,10 +22,47 @@ type SignUpFormData = {
   confirmPassword: string;
 };
 
+type SignUpMethod = "email" | "google";
+
+const SIGNUP_METHODS = [
+  {
+    id: "email",
+    label: "회원가입",
+    value: "email" as const,
+  },
+  {
+    id: "google",
+    label: "Google 회원가입",
+    value: "google" as const,
+  },
+] as const;
+
+const LOGO_URL =
+  "https://nng-phinf.pstatic.net/MjAyNTAzMTZfMjMz/MDAxNzQyMDU0NTAyMDY4.VnZJ8y2dPYjw2CmwOlgEcBEjK7fdNWaWFK3gTlx_-XMg.Mfk1lDB-NjByuqHR_q4lpqfuZZISIp67JRPe1Pk5Twwg.PNG/123.png?type=f120_120_na";
+
 export default function SignUp() {
+  const navigate = useNavigate();
   const [ageChecked, setAgeChecked] = useState(false);
   const [consentChecked, setConsentChecked] = useState(false);
-  const { handleSignUp, errorMessage, isLoading } = useSignUp();
+  const [signUpMethod, setSignUpMethod] = useState<SignUpMethod>("email");
+
+  const session = useAuthStore((state) => state.session);
+  const {
+    handleSignUp,
+    errorMessage: emailErrorMessage,
+    isLoading: isEmailLoading,
+  } = useSignUp();
+  const {
+    handleGoogleSignUp,
+    errorMessage: googleErrorMessage,
+    isLoading: isGoogleLoading,
+  } = useGoogleSignUp();
+
+  useEffect(() => {
+    if (session) {
+      navigate("/", { replace: true });
+    }
+  }, [session, navigate]);
 
   const {
     register,
@@ -31,23 +80,73 @@ export default function SignUp() {
     [ageChecked, consentChecked],
   );
 
+  const isLoading = useMemo(
+    () => (signUpMethod === "email" ? isEmailLoading : isGoogleLoading),
+    [signUpMethod, isEmailLoading, isGoogleLoading],
+  );
+
+  const errorMessage = useMemo(
+    () => (signUpMethod === "email" ? emailErrorMessage : googleErrorMessage),
+    [signUpMethod, emailErrorMessage, googleErrorMessage],
+  );
+
   const isButtonDisabled = useMemo(
     () => !hasAllConsent || isLoading,
     [hasAllConsent, isLoading],
   );
 
-  const onSubmit = async (data: SignUpFormData) => {
+  const buttonClassName = useMemo(
+    () =>
+      `${isLoading ? "cursor-wait" : ""} ${hasAllConsent ? "bg-white" : "bg-gray-200/50"}`,
+    [isLoading, hasAllConsent],
+  );
+
+  const onSubmit = useCallback(
+    async (data: SignUpFormData) => {
+      if (!hasAllConsent) {
+        return;
+      }
+      await handleSignUp(data.email, data.password, hasAllConsent);
+    },
+    [hasAllConsent, handleSignUp],
+  );
+
+  const onGoogleSignUp = useCallback(() => {
     if (!hasAllConsent) {
       return;
     }
-    await handleSignUp(data.email, data.password, hasAllConsent);
-  };
+    handleGoogleSignUp(hasAllConsent);
+  }, [hasAllConsent, handleGoogleSignUp]);
+
+  const handleConsentChange = useCallback(
+    (key: "ageChecked" | "consentChecked", checked: boolean) => {
+      if (key === "ageChecked") {
+        setAgeChecked(checked);
+      } else {
+        setConsentChecked(checked);
+      }
+    },
+    [],
+  );
+
+  const handleSignUpMethodChange = useCallback((method: SignUpMethod) => {
+    setSignUpMethod(method);
+  }, []);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-purple-200 via-blue-200 to-purple-300 p-4">
-      <main className="glass-container flex w-full max-w-lg flex-col items-center gap-4 px-6 py-8 sm:gap-6 sm:px-10 sm:py-10">
+      <main className="glass-container relative flex w-full max-w-lg flex-col items-center gap-4 px-6 py-8 sm:gap-6 sm:px-10 sm:py-10">
+        <Button
+          variant="ICON"
+          onClick={() => navigate("/")}
+          className="absolute top-4 left-4 flex items-center justify-center rounded-full bg-white/80 p-2 shadow-md transition-all hover:bg-white hover:shadow-lg"
+          aria-label="뒤로가기"
+        >
+          <ArrowLeft size={20} className="text-gray-700" />
+        </Button>
+
         <img
-          src="https://nng-phinf.pstatic.net/MjAyNTAzMTZfMjMz/MDAxNzQyMDU0NTAyMDY4.VnZJ8y2dPYjw2CmwOlgEcBEjK7fdNWaWFK3gTlx_-XMg.Mfk1lDB-NjByuqHR_q4lpqfuZZISIp67JRPe1Pk5Twwg.PNG/123.png?type=f120_120_na"
+          src={LOGO_URL}
           alt="온유 ONU 로고"
           className="mb-2 h-16 w-16 rounded-full bg-white/70 shadow-xl ring-2 ring-indigo-200"
         />
@@ -65,10 +164,9 @@ export default function SignUp() {
         </p>
 
         <ul className="list-disc space-y-1 pl-5 text-xs text-gray-700 sm:text-sm">
-          <li>이메일 주소</li>
-          <li>닉네임 (이름)</li>
-          <li>프로필 이미지 (선택)</li>
-          <li>서비스 이용 기록: 신청한 곡, 즐겨찾기 내역, 이용 통계 등</li>
+          {PRIVACY_INFO_ITEMS.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
         </ul>
 
         <p className="text-center text-xs text-gray-500">
@@ -82,98 +180,123 @@ export default function SignUp() {
           을 참조하세요.
         </p>
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="flex w-full flex-col gap-4"
-        >
-          <Input
-            type="email"
-            label="이메일"
-            placeholder="이메일을 입력하세요"
-            error={errors.email?.message}
-            {...register("email", {
-              required: "이메일을 입력해주세요",
-              pattern: {
-                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                message: "올바른 이메일 형식이 아닙니다",
-              },
-            })}
-          />
+        <div className="flex w-full flex-col gap-2 text-sm text-gray-800">
+          {CONSENT_CHECKBOXES.map((checkbox) => (
+            <ConsentCheckbox
+              key={checkbox.id}
+              id={checkbox.id}
+              label={checkbox.label}
+              checked={
+                checkbox.key === "ageChecked" ? ageChecked : consentChecked
+              }
+              onChange={(checked) => handleConsentChange(checkbox.key, checked)}
+            />
+          ))}
+        </div>
 
-          <Input
-            type="password"
-            label="비밀번호"
-            placeholder="비밀번호를 입력하세요 (최소 6자)"
-            error={errors.password?.message}
-            {...register("password", {
-              required: "비밀번호를 입력해주세요",
-              minLength: {
-                value: 6,
-                message: "비밀번호는 최소 6자 이상이어야 합니다",
-              },
-            })}
-          />
+        <div className="flex w-full gap-2">
+          {SIGNUP_METHODS.map((method) => (
+            <LoginMethodButton
+              key={method.id}
+              id={method.id}
+              label={method.label}
+              value={method.value}
+              isActive={signUpMethod === method.value}
+              onClick={() => handleSignUpMethodChange(method.value)}
+            />
+          ))}
+        </div>
 
-          <Input
-            type="password"
-            label="비밀번호 확인"
-            placeholder="비밀번호를 다시 입력하세요"
-            error={errors.confirmPassword?.message}
-            {...register("confirmPassword", {
-              required: "비밀번호 확인을 입력해주세요",
-              validate: (value) =>
-                value === password || "비밀번호가 일치하지 않습니다",
-            })}
-          />
-
-          <div className="flex w-full flex-col gap-2 text-sm text-gray-800">
-            <label className="flex cursor-pointer items-center gap-2">
-              <input
-                type="checkbox"
-                checked={ageChecked}
-                onChange={(e) => setAgeChecked(e.target.checked)}
-                className="cursor-pointer accent-indigo-500"
-              />
-              <span>만 14세 이상입니다.</span>
-            </label>
-            <label className="flex cursor-pointer items-center gap-2">
-              <input
-                type="checkbox"
-                checked={consentChecked}
-                onChange={(e) => setConsentChecked(e.target.checked)}
-                className="cursor-pointer accent-indigo-500"
-              />
-              <span>개인정보 수집 및 이용에 동의합니다.</span>
-            </label>
-          </div>
-
-          <Button
-            type="submit"
-            variant="LOGIN_BUTTON"
-            disabled={isButtonDisabled}
-            className={`${isLoading ? "cursor-wait" : ""} ${hasAllConsent ? "bg-white" : "bg-gray-200/50"}`}
+        {signUpMethod === "email" ? (
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex w-full flex-col gap-4"
           >
-            <span className="text-gray-700">
-              {isLoading ? "회원가입 중..." : "회원가입"}
+            <Input
+              type="email"
+              label="이메일"
+              placeholder="이메일을 입력하세요"
+              error={errors.email?.message}
+              {...register("email", {
+                required: "이메일을 입력해주세요",
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: "올바른 이메일 형식이 아닙니다",
+                },
+              })}
+            />
+
+            <Input
+              type="password"
+              label="비밀번호"
+              placeholder="비밀번호를 입력하세요 (최소 6자)"
+              error={errors.password?.message}
+              {...register("password", {
+                required: "비밀번호를 입력해주세요",
+                minLength: {
+                  value: 6,
+                  message: "비밀번호는 최소 6자 이상이어야 합니다",
+                },
+              })}
+            />
+
+            <Input
+              type="password"
+              label="비밀번호 확인"
+              placeholder="비밀번호를 다시 입력하세요"
+              error={errors.confirmPassword?.message}
+              {...register("confirmPassword", {
+                required: "비밀번호 확인을 입력해주세요",
+                validate: (value) =>
+                  value === password || "비밀번호가 일치하지 않습니다",
+              })}
+            />
+
+            <Button
+              type="submit"
+              variant="LOGIN_BUTTON"
+              disabled={isButtonDisabled}
+              className={`w-full ${buttonClassName}`}
+            >
+              <div className="flex w-full items-center justify-center gap-2">
+                <Mail />
+                <span className="text-gray-700">
+                  {isLoading ? "회원가입 중..." : "회원가입"}
+                </span>
+              </div>
+            </Button>
+          </form>
+        ) : (
+          <Button
+            variant="LOGIN_BUTTON"
+            onClick={onGoogleSignUp}
+            disabled={isButtonDisabled}
+            className={buttonClassName}
+          >
+            <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-white">
+              <GoogleIcon size={18} />
+            </div>
+            <span className="text-sm leading-5 font-medium text-[#1F1F1F]">
+              {isLoading ? "회원가입 중..." : "Google 계정으로 가입"}
             </span>
           </Button>
+        )}
 
-          {errorMessage && (
-            <div className="mt-1 min-h-[1.8em] text-center text-sm text-rose-500">
-              {errorMessage}
-            </div>
-          )}
-
-          <div className="mt-2 text-center text-sm text-gray-600">
-            이미 계정이 있으신가요?{" "}
-            <Link
-              to="/login"
-              className="text-indigo-500 underline hover:text-indigo-700"
-            >
-              로그인
-            </Link>
+        {errorMessage && (
+          <div className="mt-1 min-h-[1.8em] text-center text-sm text-rose-500">
+            {errorMessage}
           </div>
-        </form>
+        )}
+
+        <div className="mt-2 text-center text-sm text-gray-600">
+          이미 계정이 있으신가요?{" "}
+          <Link
+            to="/login"
+            className="text-indigo-500 underline hover:text-indigo-700"
+          >
+            로그인
+          </Link>
+        </div>
       </main>
     </div>
   );

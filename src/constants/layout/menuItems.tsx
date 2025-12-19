@@ -1,4 +1,11 @@
-import { LogOut, MessageSquare, Pencil, Share, User } from "lucide-react";
+import {
+  LogIn,
+  LogOut,
+  MessageSquare,
+  Pencil,
+  User,
+  UserPlus,
+} from "lucide-react";
 import type { ReactNode } from "react";
 
 export type MenuItem = {
@@ -24,23 +31,40 @@ export const createMenuItems = (
     });
   }
 
-  menuItems.push(
-    {
-      icon: isLoggedIn ? <LogOut size={20} /> : <Share size={20} />,
-      label: isLoggedIn ? "로그아웃" : "연동&로그인",
-      onClick: () => onMenuClick(isLoggedIn ? "logout" : "login"),
-    },
-    {
-      icon: <User size={20} />,
-      label: "회원정보",
-      onClick: () => onMenuClick("profile"),
-    },
-    {
-      icon: <MessageSquare size={20} />,
-      label: "건의사항",
-      onClick: () => onMenuClick("contact"),
-    },
-  );
+  // 로그인 상태에 따라 메뉴 분기
+  if (isLoggedIn) {
+    menuItems.push(
+      {
+        icon: <LogOut size={20} />,
+        label: "로그아웃",
+        onClick: () => onMenuClick("logout"),
+      },
+      {
+        icon: <User size={20} />,
+        label: "회원정보",
+        onClick: () => onMenuClick("profile"),
+      },
+    );
+  } else {
+    menuItems.push(
+      {
+        icon: <LogIn size={20} />,
+        label: "로그인",
+        onClick: () => onMenuClick("login"),
+      },
+      {
+        icon: <UserPlus size={20} />,
+        label: "회원가입",
+        onClick: () => onMenuClick("signup"),
+      },
+    );
+  }
+
+  menuItems.push({
+    icon: <MessageSquare size={20} />,
+    label: "건의사항",
+    onClick: () => onMenuClick("contact"),
+  });
 
   return menuItems;
 };

@@ -1,16 +1,12 @@
 import { memo } from "react";
 import { Button } from "@/components";
-import {
-  ConsentCheckbox,
-  LoginMethodButton,
-  EmailLoginForm,
-} from "@/components";
+import { LoginMethodButton, EmailLoginForm } from "@/components";
+import GoogleIcon from "@/components/common/GoogleIcon";
 import { useLoginLogic } from "@/hooks";
 import { Link, useNavigate } from "react-router";
-import { ArrowLeft, Mail } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 import {
-  CONSENT_CHECKBOXES,
   LOGIN_METHODS,
   PRIVACY_INFO_ITEMS,
 } from "@/constants/login/loginConstants";
@@ -21,8 +17,6 @@ const LOGO_URL =
 function Login() {
   const navigate = useNavigate();
   const {
-    ageChecked,
-    consentChecked,
     loginMethod,
     isLoading,
     errorMessage,
@@ -30,7 +24,6 @@ function Login() {
     buttonClassName,
     onEmailSubmit,
     onGoogleLogin,
-    handleConsentChange,
     handleLoginMethodChange,
   } = useLoginLogic();
 
@@ -82,20 +75,6 @@ function Login() {
           을 참조하세요.
         </p>
 
-        <div className="flex w-full flex-col gap-2 text-sm text-gray-800">
-          {CONSENT_CHECKBOXES.map((checkbox) => (
-            <ConsentCheckbox
-              key={checkbox.id}
-              id={checkbox.id}
-              label={checkbox.label}
-              checked={
-                checkbox.key === "ageChecked" ? ageChecked : consentChecked
-              }
-              onChange={(checked) => handleConsentChange(checkbox.key, checked)}
-            />
-          ))}
-        </div>
-
         <div className="flex w-full gap-2">
           {LOGIN_METHODS.map((method) => (
             <LoginMethodButton
@@ -123,11 +102,11 @@ function Login() {
             disabled={isButtonDisabled}
             className={buttonClassName}
           >
-            <div className="flex h-5 w-5 shrink-0 items-center justify-center">
-              <Mail />
+            <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-white">
+              <GoogleIcon size={18} />
             </div>
-            <span className="text-gray-700">
-              {isLoading ? "로그인 중..." : "Google로 로그인"}
+            <span className="text-sm leading-5 font-medium text-[#1F1F1F]">
+              {isLoading ? "로그인 중..." : "Google 계정으로 로그인"}
             </span>
           </Button>
         )}
