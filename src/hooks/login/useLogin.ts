@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams } from "react-router";
 import { useAuthStore } from "@/stores/authStore";
 import { supabase } from "@/supabase/supabase";
 import { saveConsentInfo } from "@/utils/consentStorage";
-import { toast } from "react-toastify";
 
 export const useLogin = () => {
   const [searchParams] = useSearchParams();
