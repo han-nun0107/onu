@@ -16,7 +16,14 @@ export const useLogin = () => {
 
   useEffect(() => {
     const verifyAndRedirect = async () => {
-      if (!session && window.location.pathname === "/login") {
+      const signupRequired = sessionStorage.getItem("signup_required");
+
+      if (
+        signupRequired === "true" &&
+        !session &&
+        window.location.pathname === "/login"
+      ) {
+        sessionStorage.removeItem("signup_required");
         toast.error("회원가입이 필요합니다. 회원가입을 진행해주세요.");
         navigate("/signup", { replace: true });
         return;

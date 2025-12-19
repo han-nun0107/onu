@@ -186,6 +186,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
             if (!userExists) {
               await supabase.auth.signOut();
+              sessionStorage.setItem("signup_required", "true");
               return;
             }
 
