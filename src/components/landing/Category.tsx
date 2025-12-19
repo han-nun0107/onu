@@ -1,3 +1,4 @@
+import { memo } from "react";
 import {
   Card,
   GridContainer,
@@ -12,7 +13,7 @@ import {
   useInfiniteList,
 } from "@/hooks";
 
-export default function Category() {
+function Category() {
   const { data: allSongs, isLoading } = useAllSongs();
   const { categories } = useCategory(allSongs);
   const { getIsOpen, setIsOpen } = useModalState();
@@ -59,3 +60,5 @@ export default function Category() {
     </GridContainer>
   );
 }
+
+export default memo(Category);

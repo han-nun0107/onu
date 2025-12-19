@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, memo } from "react";
 import {
   Card,
   GridContainer,
@@ -17,7 +17,7 @@ import { useSortFilterStore } from "@/stores/sortFilterStore";
 import { useSearchStore } from "@/stores/searchStore";
 import { useEditModeStore } from "@/stores/editModeStore";
 
-export default function Song() {
+function Song() {
   const { sortType, filterType } = useSortFilterStore();
   const { searchQuery } = useSearchStore();
   const { data: allSongsData, isLoading } = useAllSongs();
@@ -72,3 +72,5 @@ export default function Song() {
     </>
   );
 }
+
+export default memo(Song);

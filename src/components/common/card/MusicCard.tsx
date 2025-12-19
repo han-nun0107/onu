@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { memo, useCallback } from "react";
 import { Button, Icon, Tag, AdminOnly } from "@/components";
 import HeartIcon from "@/assets/icons/heart/heartButton.svg?react";
 import FullHeartIcon from "@/assets/icons/heart/fullHeart.svg?react";
@@ -25,7 +25,7 @@ type MusicCardProps = {
   songData?: SongData;
 };
 
-export default function MusicCard({
+function MusicCard({
   title,
   singer,
   categories,
@@ -65,8 +65,8 @@ export default function MusicCard({
               src={thumbnail}
               alt="music-card"
               className="pointer-events-none h-full w-full object-cover object-center"
-              loading="eager"
-              fetchPriority="high"
+              loading="lazy"
+              decoding="async"
             />
           </div>
           <div className="backdrop-blur-0 pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:backdrop-blur-sm">
@@ -168,3 +168,5 @@ export default function MusicCard({
     </article>
   );
 }
+
+export default memo(MusicCard);

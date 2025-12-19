@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { cn } from "@/utils";
 import {
   BUTTON_VARIANTS,
@@ -11,18 +12,16 @@ type ButtonProps = {
   disabled?: boolean;
   variant?: ButtonVariant;
   className?: string;
-  style?: React.CSSProperties;
-  type?: "button" | "submit" | "reset";
+  type?: React.ButtonHTMLAttributes<HTMLButtonElement>["type"];
   "aria-label"?: string;
 };
 
-export default function Button({
+function Button({
   children,
   onClick,
   disabled = false,
   variant = DEFAULT_BUTTON_VARIANT,
   className,
-  style,
   type = "button",
   "aria-label": ariaLabel,
 }: ButtonProps) {
@@ -38,9 +37,10 @@ export default function Button({
         { "cursor-not-allowed": disabled },
         className,
       )}
-      style={style}
     >
       {children}
     </button>
   );
 }
+
+export default memo(Button);

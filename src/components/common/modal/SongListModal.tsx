@@ -70,6 +70,8 @@ export default function SongListModal({
                       src={songThumbnail}
                       alt={song.title || "노래 이미지"}
                       className="h-12 w-12 shrink-0 rounded-lg object-cover sm:h-16 sm:w-16"
+                      loading="lazy"
+                      decoding="async"
                     />
                   )}
                   <div className="flex min-w-0 flex-1 flex-col gap-1">

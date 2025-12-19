@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { cn } from "@/utils";
 
 type TagProps =
@@ -26,7 +27,7 @@ const badgeTextMap = {
   bomb: "💣",
 } as const;
 
-export default function Tag(props: TagProps) {
+function Tag(props: TagProps) {
   const { className } = props;
 
   if (props.type === "badge") {
@@ -89,3 +90,5 @@ export default function Tag(props: TagProps) {
     </div>
   );
 }
+
+export default memo(Tag);

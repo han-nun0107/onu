@@ -22,6 +22,8 @@ export default function UserInfo({ user }: { user: SimpleUser }) {
           src={avatarUrl}
           alt="profile"
           className="h-16 w-16 rounded-full border-2 border-indigo-300 shadow-lg sm:h-20 sm:w-20 sm:border-4"
+          loading="lazy"
+          decoding="async"
         />
         <h2 className="text-center text-base font-bold break-all sm:text-left sm:text-xl">
           {user.email || "user@email.com"}

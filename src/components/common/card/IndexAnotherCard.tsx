@@ -34,6 +34,7 @@ export default function IndexAnotherCard({
           height={160}
           className="absolute inset-0 h-full w-full object-cover object-center"
           loading="lazy"
+          decoding="async"
         />
         <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px]" />
         <p className="relative z-10 px-2 text-center text-xs font-bold text-[#fafafb] drop-shadow-lg sm:text-sm">

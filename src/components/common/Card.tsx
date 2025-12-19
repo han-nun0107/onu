@@ -1,3 +1,4 @@
+import { memo } from "react";
 import type { ComponentProps, ReactElement } from "react";
 
 import { CARD_MAP } from "@/foundations";
@@ -15,4 +16,4 @@ const Card = (props: CardProps): ReactElement => {
   return <Component {...props.data} />;
 };
 
-export default Card;
+export default memo(Card);
