@@ -25,31 +25,34 @@ export const useLogin = () => {
     verifyAndRedirect();
   }, [session, navigate, redirectParam]);
 
-  const handleLogin = useCallback(async (hasAllConsent: boolean) => {
-    setIsLoading(true);
-    setErrorMessage("");
+  const handleLogin = useCallback(
+    async (hasAllConsent: boolean) => {
+      setIsLoading(true);
+      setErrorMessage("");
 
-    try {
-      saveConsentInfo(hasAllConsent);
+      try {
+        saveConsentInfo(hasAllConsent);
 
-      const redirectUrl = `${window.location.origin}/auth/callback`;
+        const redirectUrl = `${window.location.origin}/login?redirect=${encodeURIComponent(redirectParam)}`;
 
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: redirectUrl,
-        },
-      });
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: "google",
+          options: {
+            redirectTo: redirectUrl,
+          },
+        });
 
-      if (error) {
-        setErrorMessage(error.message || "로그인 중 오류가 발생했습니다.");
+        if (error) {
+          setErrorMessage(error.message || "로그인 중 오류가 발생했습니다.");
+          setIsLoading(false);
+        }
+      } catch (error) {
+        setErrorMessage("로그인 중 오류가 발생했습니다.");
         setIsLoading(false);
       }
-    } catch (error) {
-      setErrorMessage("로그인 중 오류가 발생했습니다.");
-      setIsLoading(false);
-    }
-  }, []);
+    },
+    [redirectParam],
+  );
 
   return { handleLogin, errorMessage, isLoading };
 };
