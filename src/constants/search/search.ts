@@ -344,6 +344,9 @@ export const SEARCH_MAPPINGS: Record<string, string[]> = {
     "스매시 인투 피스",
     "스매시인투피스",
   ],
+  나훈아: ["나훈아", "최홍기", "NA Hoon A"],
+  Hebi: ["Hebi", "헤비"],
+  Yyeon: ["연", "Yyeon", "김연"],
   // 장르 매핑
   케이팝: ["케이팝", "kpop", "K-pop"],
   팝: ["팝", "pop"],
